@@ -1,0 +1,143 @@
+\documentclass[twoside,a4paper,12pt]{article}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[colorlinks,
+  citecolor=black,linkcolor=black,urlcolor=black]{hyperref}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{pstricks}
+\usepackage{pgfplots}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[tikz]{bclogo}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=PHP,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\footnotesize\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{natbib} % bibtex
+
+\usepackage{multicol}
+\usepackage[hmargin={.12\paperwidth,.18\paperwidth},
+  vmargin=.18\paperwidth,headheight=15pt]{geometry}
+
+% Entêtes et pieds de page
+\usepackage{fancyhdr}
+% Configuration des en-têtes et pieds-de-page : tiré du User Guide
+\fancyhead{} % clear all header fields
+\fancyhead[RO,LE]{\bfseries Polytech Tours DI 3A}
+\fancyhead[LO,RE]{\bfseries DB Practical Work}
+\fancyfoot{} % clear all footer fields
+\fancyfoot[RO,LE]{\thepage}
+% Par défaut, on utilise le style fancy
+\pagestyle{fancy}
+% Pour la page de garde, on redéfinit le style plain
+\fancypagestyle{plain}{%
+  \fancyhf{} % clear all header and footer fields
+  \fancyfoot[RO,LE]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}}
+
+\usepackage[english]{babel}
+
+\newenvironment{foreignpar}[1][english]{%
+    \em\selectlanguage{#1}%
+}{}
+\newcommand*{\foreign}[2][english]{%
+    \emph{\foreignlanguage{#1}{#2}}%
+}
+
+\title{DB Practical Work 3:\\The Hashtag model}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+%% RESUME -----------------------------------------------------------------
+\begin{abstract}
+  The following subject aims at implementing the data handling for hashtags in a twitter-like web-application. Implementations are to be done in the file \texttt{model\_student/hashtag.php}
+\end{abstract}
+
+\tableofcontents
+
+\clearpage
+
+\section{Requirement}
+To fulfill this work, you will need the following elements:
+
+\begin{itemize}
+\item A working environment with db connection to both app and test databases (see \texttt{0setup.pdf}).
+\item At least the tables related to the previously completed models and \textbf{hashtags} in \texttt{sql/schemas.sql}.
+\end{itemize}
+
+\section{Work to do}
+You have to fill out the functions defined in the file \texttt{model\_student/hashtag.php}
+
+These functions are used in the application to get access to the database. Therefore, these functions must observe some rules about both input data (the formats of the parameters of the functions) and output data (the returned values).
+
+In the functions, you can access to the PDO object by using the following instruction:
+
+\begin{lstlisting}
+$db = \Db::dbc();
+\end{lstlisting}
+
+Then, you can perform queries using \texttt{\$db} like a PDO object:
+\begin{lstlisting}
+$db = \Db::dbc();
+$result = $db->query('SELECT * FROM hashtag');
+\end{lstlisting}
+
+When you completed all the functions, you can check them by using the available unit tests.
+
+\section{The hashtag entity}
+
+\subsection{Presentation}
+A hashtag is a keyword which can be used in posts to identify a particular topic or subject. For instance, if a user wants to talk about cats, the hashtag "\#cats" can be included in the post's text. The message will be seen when someone searches for this hashtag.
+
+\subsection{Functions}
+\subsubsection{\texttt{attach(\$pid, \$hashtag\_name)}}
+\texttt{attach} creates a link between a given post and a hashtag.
+
+\begin{bclogo}[logo=\bcattention, noborder=true, barre=none]{Important!}
+	The function \texttt{create} in \texttt{model\_student/post.php} must use this function to attach every hashtag parsed in text (using \texttt{extract\_hashtags}, provided in \texttt{model/post.php}).
+\end{bclogo}
+
+\subsubsection{\texttt{list\_hashtags()}}
+\texttt{list\_hashtags} returns an array containing the names of every hashtags.
+
+\subsubsection{\texttt{list\_popular\_hashtags(\$length)}}
+\texttt{list\_popular\_hashtags} returns an array containing the names of the most popular hashtags (the array should be at most of size \$length).
+
+A hashtag popularity is evaluated by counting the number of posts attached to it.
+
+\subsubsection{\texttt{get\_posts(\$hashtag\_name)}}
+\texttt{get\_posts} returns an array containing every post related to a given hashtag. Returns an empty array if the hashtag doesn't exist.
+
+\subsubsection{\texttt{get\_related\_hashtags(\$hashtag\_name, \$length)}}
+\texttt{get\_related\_posts} returns an array containing every hashtags related to a given hashtag. Related hashtags are those who are used at least once in a same post.
+
+\end{document}

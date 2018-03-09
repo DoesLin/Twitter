@@ -1,0 +1,6 @@
+17-01-03
+1, Change "Lu" from "NULL" to "default false"
+
+17-01-02
+1, Change "IDTWEET_REPONDRE" from "NOT NULL" to "NULL"
+2, Change the date in every table from "date" to "DATETIME DEFAULT CURRENT_TIMESTAMP"

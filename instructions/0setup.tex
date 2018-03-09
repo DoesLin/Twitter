@@ -1,0 +1,166 @@
+\documentclass[twoside,a4paper,12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[colorlinks,
+  citecolor=black,linkcolor=black,urlcolor=black]{hyperref}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{pstricks}
+\usepackage{pgfplots}
+\usepackage{listings}
+\usepackage{hyperref}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=PHP,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\footnotesize\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{natbib} % bibtex
+
+\usepackage{multicol}
+\usepackage[hmargin={.12\paperwidth,.18\paperwidth},
+  vmargin=.18\paperwidth,headheight=15pt]{geometry}
+
+% Entêtes et pieds de page
+\usepackage{fancyhdr}
+% Configuration des en-têtes et pieds-de-page : tiré du User Guide
+\fancyhead{} % clear all header fields
+\fancyhead[RO,LE]{\bfseries Polytech Tours DI 3A}
+\fancyhead[LO,RE]{\bfseries DB Practical Work}
+\fancyfoot{} % clear all footer fields
+\fancyfoot[RO,LE]{\thepage}
+% Par défaut, on utilise le style fancy
+\pagestyle{fancy}
+% Pour la page de garde, on redéfinit le style plain
+\fancypagestyle{plain}{%
+  \fancyhf{} % clear all header and footer fields
+  \fancyfoot[RO,LE]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}}
+
+\usepackage[english]{babel}
+
+\newenvironment{foreignpar}[1][english]{%
+    \em\selectlanguage{#1}%
+}{}
+\newcommand*{\foreign}[2][english]{%
+    \emph{\foreignlanguage{#1}{#2}}%
+}
+
+\title{DB Practical Work 0:\\Setting the system up}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+%% RESUME -----------------------------------------------------------------
+\begin{abstract}
+  The following leaflet gives the steps to set the development environment up.
+\end{abstract}
+
+\tableofcontents
+
+\clearpage
+
+\section{Work to do}
+You have to set your system up in order to get a proper development environment.
+
+You must install the environment by following section \ref{sec:installation}.
+
+\section{Installation}
+\label{sec:installation}
+
+Using the virtual machine is recommended but you can also use a personnal machine to run the Vagrant image. \textbf{Choose one of the following subsection}.
+
+\newpage
+\subsection{On the Virtual Machine}
+\begin{enumerate}
+\item Get the VM called "VMWARE UBUNTU 16 64 LTS - DBPROJECT M MARTINEAU" in \texttt{D:\textbackslash VM Productions\textbackslash} (if needed, the username is \texttt{ubuntu} and the password \texttt{password})
+\item Start it
+\item Go in \texttt{/home/ubuntu/db-project/} : here are the sources already installed.
+\item Put:
+\begin{itemize}
+	\item the SQL table creation commands (\texttt{CREATE TABLE}) inside\\ \texttt{/home/ubuntu/db-project/sql/schemas.sql}
+	\item the SQL entries creation commands (\texttt{INSERT INTO})\\ inside \texttt{/home/ubuntu/db-project/sql/entries.sql}
+\end{itemize}
+\item Go in \texttt{/home/ubuntu/db-project/scripts} and click on \texttt{populate\_db.sh}
+\end{enumerate}
+
+If you open a web browser inside the VM and go to \url{http://127.0.0.1}, you will find the web application. PHPMyAdmin is accessible at \url{http://127.0.0.1/phpmyadmin/} (user: \texttt{root}, password: \texttt{password}).
+
+There are many scripts to manipulate the VM : they are in\\ \texttt{/home/ubuntu/db-project/scripts}. You can click on them to execute them.
+
+Their roles are described in section \ref{sec:scripts}. 
+
+\newpage
+\subsection{Using the lightweight Vagrant image}
+You will need the following elements for the software to work:
+\begin{enumerate}
+\item Virtualbox (\url{https://www.virtualbox.org/})
+\item Vagrant (\url{https://www.vagrantup.com/})
+\end{enumerate}
+
+Once you have got all the requirements fulfilled, you can proceed with the following steps :
+
+\begin{enumerate}
+\item Download \url{https://github.com/prafiny/db-project/archive/master.zip}
+\item Unzip the archive somewhere.
+\item Put:
+\begin{itemize}
+	\item the SQL table creation commands (\texttt{CREATE TABLE}) inside \texttt{sql/schemas.sql}
+	\item the SQL entries creation commands (\texttt{INSERT INTO})\\ inside \texttt{sql/entries.sql}
+\end{itemize}
+\item Then
+\begin{itemize}
+	\item For Windows: go in the folder \texttt{scripts/win}, click on the \texttt{launch\_vagrant} script. When it's done, click on \texttt{populate\_db}. It will create the database.
+	\item For Linux/MacOS: go in the folder \texttt{scripts/} and execute the \texttt{launch\_vagrant} script. When it's done, execute the script \texttt{populate\_db}. It will create the database.
+\end{itemize}
+\item Wait
+\end{enumerate}
+
+The Vagrant image should be ready and running. If you open a web browser and go to \url{http://127.0.0.1:8080}, you will find the web application. PHPMyAdmin is accessible at \url{http://127.0.0.1:8080/phpmyadmin/} (user: \texttt{root}, password: \texttt{password}).
+
+You can edit the code directly on your host operating system. To shut the image down, you can use the script \texttt{stop\_vagrant}.
+
+There are many scripts to manipulate the image :
+\begin{itemize}
+	\item For Windows in \texttt{scripts/win}
+	\item For Linux/MacOS in \texttt{scripts}
+\end{itemize}
+
+Their roles are described in section \ref{sec:scripts}. 
+\newpage
+\section{Scripts}
+\label{sec:scripts}
+
+\begin{description}
+	\item[\texttt{populate\_db}] This script creates the tables and entries using the files in the folder \texttt{sql/}
+	\item[\texttt{snapshot\_db}] This script saves the current \texttt{dbproject\_app} mysql database into the \texttt{sql/} files
+	\item[\texttt{tests}] Launches the unit tests.
+	\item[\texttt{update}] Update the source code and dependencies.
+	\item[\texttt{reset\_env}] resets the whole project WARNING : deletes all the data including \texttt{model\_student/}, \texttt{sql/} and the SQL databases.
+\end{description}
+\end{document}

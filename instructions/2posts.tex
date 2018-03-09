@@ -1,0 +1,249 @@
+\documentclass[twoside,a4paper,12pt]{article}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[colorlinks,
+  citecolor=black,linkcolor=black,urlcolor=black]{hyperref}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{pstricks}
+\usepackage{pgfplots}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[tikz]{bclogo}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=PHP,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\footnotesize\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{natbib} % bibtex
+
+\usepackage{multicol}
+\usepackage[hmargin={.12\paperwidth,.18\paperwidth},
+  vmargin=.18\paperwidth,headheight=15pt]{geometry}
+
+% Entêtes et pieds de page
+\usepackage{fancyhdr}
+% Configuration des en-têtes et pieds-de-page : tiré du User Guide
+\fancyhead{} % clear all header fields
+\fancyhead[RO,LE]{\bfseries Polytech Tours DI 3A}
+\fancyhead[LO,RE]{\bfseries DB Practical Work}
+\fancyfoot{} % clear all footer fields
+\fancyfoot[RO,LE]{\thepage}
+% Par défaut, on utilise le style fancy
+\pagestyle{fancy}
+% Pour la page de garde, on redéfinit le style plain
+\fancypagestyle{plain}{%
+  \fancyhf{} % clear all header and footer fields
+  \fancyfoot[RO,LE]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}}
+
+\usepackage[english]{babel}
+
+\newenvironment{foreignpar}[1][english]{%
+    \em\selectlanguage{#1}%
+}{}
+\newcommand*{\foreign}[2][english]{%
+    \emph{\foreignlanguage{#1}{#2}}%
+}
+
+\title{DB Practical Work 2:\\The Post model}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+%% RESUME -----------------------------------------------------------------
+\begin{abstract}
+  The following subject aims at implementing the data handling for posts in a twitter-like web-application. Implementations are to be done in the file \texttt{model\_student/post.php}
+\end{abstract}
+
+\tableofcontents
+
+\clearpage
+
+\section{Requirement}
+To fulfill this work, you will need the following elements:
+
+\begin{itemize}
+\item A working environment with db connection to both app and test databases (see \texttt{0setup.pdf}).
+\item At least the tables modeling user related tables and \textbf{posts}, \textbf{mentions} and \textbf{likes} in \texttt{sql/schemas.sql}.
+\end{itemize}
+
+\section{Work to do}
+You have to fill out the functions defined in the file \texttt{model\_student/post.php}
+
+These functions are used in the application to get access to the database. Therefore, these functions must observe some rules about both input data (the formats of the parameters of the functions) and output data (the returned values).
+
+In the functions, you can access to the PDO object by using the following instruction:
+
+\begin{lstlisting}
+$db = \Db::dbc();
+\end{lstlisting}
+
+Then, you can perform queries using \texttt{\$db} like a PDO object:
+\begin{lstlisting}
+$db = \Db::dbc();
+$result = $db->query('SELECT * FROM post');
+\end{lstlisting}
+
+When you completed all the functions, you can check them by using the available unit tests.
+
+\section{The post entity}
+
+\subsection{Presentation}
+
+The Post entity represents a post and its properties:
+
+\begin{itemize}
+\item the date and time when it was published
+\item the message itself
+\end{itemize}
+
+The post must be linked to the user who has written it and, if it was to respond to another post, must be linked to it.
+
+\subsection{Creating and getting a post}
+
+\subsubsection{\texttt{get(\$id)}}
+
+\texttt{get} is the functions that returns the post ids. It must return null if no post with the given id were found.
+
+Here is an example of what \texttt{get} should return:
+
+\begin{lstlisting}
+(object) array(
+"id" => 1337,
+"text" => "Text #test",
+"date" => new \DateTime('2011-01-01T15:03:01'),
+"author" => \Model\User\get(2)
+)
+\end{lstlisting}
+
+\subsubsection{\texttt{create(\$author\_id, \$text, \$response\_to=null)}}
+
+\texttt{create} saves a post object. It does a rather important number of things (see comments in source file).
+
+For now, let's ignore both hashtags and mentions parsing.
+
+\texttt{create} must return the id of the post. It is appreciated if a transaction is used.
+
+\subsection{Handling responses}
+
+\subsubsection{\texttt{get\_with\_joins(\$id)}}
+
+\texttt{get\_with\_joins} is a function which includes (within the post object) joined elements which are : a) the post object to which the post responds to, b) the objects for every users that liked the post and c) the hashtag it includes.
+
+For now, let's ignore the last two elements : likes and hashtag. (the attributes can be set to an empty array, with \texttt{array()}). \texttt{responds\_to} must in the contrary return a post object.
+
+Here is an example of what should return \texttt{get\_with\_joins}:
+
+\begin{lstlisting}
+(object) array(
+"id" => 1337,
+"text" => "Ima writing a post !",
+"date" => new \DateTime('2011-01-01T15:03:01'),
+"author" => \Model\User\get(2),
+"likes" => array(),
+"hashtags" => array(),
+"responds_to" => null
+)
+
+\end{lstlisting}
+
+
+\subsubsection{\texttt{get\_responses(\$id)}}
+
+\texttt{get\_responses} returns an array of post objects which respond to the occuring post.
+
+\subsection{Deleting a post}
+
+\subsubsection{\texttt{destroy(\$id)}}
+
+\texttt{destroy} takes care of deleting post objects.
+
+\begin{bclogo}[logo=\bcattention, noborder=true, barre=none]{Important!}
+	The deletion behaviour must be allowing deleting posts which are liked or which mention users. \textbf{To see and modify the deletion policy in phpMyAdmin, you must go in the table view → Structure → Relation view.}
+		
+\end{bclogo}
+
+\subsection{Listing and searching for posts}
+
+\subsubsection{\texttt{list\_all(\$date\_sorted=false)}}
+
+\texttt{list\_all} returns the list of every posts sorted according to the passed parameter:
+
+\begin{itemize}
+\item \texttt{\$date\_sorted="ASC"} means sorting along publication time (oldest to most recent).
+\item \texttt{\$date\_sorted="DESC"} means sorting along publication time (most recent to oldest).
+\item \texttt{\$date\_sorted=false} means no sorting.
+\end{itemize}
+
+\subsubsection{\texttt{list\_user\_posts(\$id, \$date\_sorted="DESC")}}
+
+\texttt{list\_user\_posts} returns the list of posts from a given user.
+
+\texttt{\$date\_sorted} handling is exactly the same as in \texttt{list\_all}
+
+\subsubsection{\texttt{search(\$string)}}
+
+\texttt{search} returns a list of posts which texts include a given string.
+
+\section{Mentioning users}
+
+\subsection{Presentation}
+
+Mentioning a user is useful to draw his/her attention. By including \texttt{@the\_username} to the message, a user is mentioned. If the message is "Hello @alice and @bob", two users are mentioned (if they exist): the one with username alice and the one with username bob.
+
+\subsection{\texttt{mention\_user(\$pid, \$uid)}}
+\texttt{mention\_user} creates a mention association.
+
+\subsection{\texttt{get\_mentioned(\$pid)}}
+\texttt{get\_mentioned} returns the list of the mentioned users in a given post.
+
+\subsection{\texttt{create(\$author\_id, \$text, \$response\_to=null)}}
+Now that you coded the functions that takes care about mentions, you must use them in \texttt{create} so that mentions are added when creating a post.
+
+\texttt{create} must handle making the mention associations while creating a post. To help, the function \texttt{extract\_mentions} (in \texttt{model/post.php}) is provided.
+
+\section{Liking posts}
+
+\subsection{Presentation}
+A user can like a post. This association has to be modeled accordingly.
+
+\subsection{\texttt{like(\$uid, \$pid)}}
+\texttt{like} creates a like association.
+
+\subsection{\texttt{unlike(\$uid, \$pid)}}
+\texttt{unlike} removes a like association.
+
+\subsection{\texttt{get\_likes(\$pid)}}
+\texttt{get\_likes} returns the list (array) of the user objects who liked the post.
+
+\subsection{\texttt{get\_with\_joins(\$id)}}
+It is time to make \texttt{get\_with\_joins} handle likes. The \texttt{likes} attribute must be a list of user objects.
+
+\end{document}

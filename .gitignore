@@ -1,0 +1,15 @@
+composer.lock
+vendor
+*.swp
+*.swo
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.toc
+www/images/*.pic.*
+.vagrant
+sql/backup/*.sql
+*.nav
+*.snm
+*.vrb

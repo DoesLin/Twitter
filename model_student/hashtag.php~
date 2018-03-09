@@ -1,0 +1,103 @@
+<?php
+namespace Model\Hashtag;
+use \Db;
+use \PDOException;
+use \PDO;
+/**
+ * Hashtag model
+ *
+ * This file contains every db action regarding the hashtags
+ */
+
+/**
+ * Attach a hashtag to a post
+ * @param pid the post id to which attach the hashtag
+ * @param hashtag_name the name of the hashtag to attach
+ */
+function attach($pid, $hashtag_name) {
+    try {
+        $db = \Db::dbc();
+
+        //check whether the hashtag already existe
+        $sql='SELECT * FROM HASHTAG WHERE TAGNAME LIKE "'. $hashtag_name. '";';
+        $stmt=$db->prepare($sql);
+        $stmt->execute();
+        
+        $result = $stmt->fetch();
+        if($result==false) {
+            //insert into hashtag
+            $sql="INSERT INTO HASHTAG (TAGNAME) VALUES (:hashtag_name);";
+            $stmt=$db->prepare($sql);
+            $stmt->execute(array(':hashtag_name'=>$hashtag_name));
+        }
+
+        //insert into concerner
+        $sql="INSERT INTO CONCERNER (IDTWEET, TAGNAME) VALUES (:pid, :hashtag_name);";
+        $stmt=$db->prepare($sql);
+        $stmt->execute(
+            array(
+                ':pid'=>$pid,
+                ':hashtag_name'=>$hashtag_name
+            )
+        );
+        echo "Attach successfully\n";
+    } catch (\PDOException $e) {
+		print $e->getMessage();
+	}
+    $db=NULL;
+}
+
+/**
+ * List hashtags
+ * @return a list of hashtags names
+ */
+function list_hashtags() {
+    try {
+        $db = \Db::dbc();
+
+        $sql="SELECT TAGNAME FROM HASHTAG;";
+        $stmt=$db->prepare($sql);
+		$stmt->execute();
+
+        $results = $stmt->fetchAll();
+        if($results==false) {
+            $hashtags=(array) NULL;
+        } else {
+            foreach($results as $result) {
+                $hashtags[]=$result[0];
+            }
+        }
+        echo "List hashtags successfully\n";
+        return $hashtags;
+    } catch (\PDOException $e) {
+		print $e->getMessage();
+	}
+//    return ["Test"];
+}
+
+/**
+ * List hashtags sorted per popularity (number of posts using each)
+ * @param length number of hashtags to get at most
+ * @return a list of hashtags
+ */
+function list_popular_hashtags($length) {
+    return ["Hallo"];
+}
+
+/**
+ * Get posts for a hashtag
+ * @param hashtag the hashtag name
+ * @return a list of posts objects or null if the hashtag doesn't exist
+ */
+function get_posts($hashtag_name) {
+    return [\Model\Post\get(1)];
+}
+
+/** Get related hashtags
+ * @param hashtag_name the hashtag name
+ * @param length the size of the returned list at most
+ * @return an array of hashtags names
+ */
+function get_related_hashtags($hashtag_name, $length) {
+    return ["Hello"];
+}

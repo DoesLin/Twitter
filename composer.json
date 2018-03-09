@@ -1,0 +1,10 @@
+{
+    "require": {
+        "phpunit/phpunit": "5.5.*",
+        "phpdocumentor/phpdocumentor": "2.*",
+        "symfony/yaml": "^3.2"
+    },
+    "config": {
+        "vendor-dir":"/home/ubuntu/vendor"
+    }    
+}

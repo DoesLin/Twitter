@@ -1,0 +1,349 @@
+<?php
+namespace Model\User;
+use \Db;
+use \PDOException;
+/**
+ * User model
+ *
+ * This file contains every db action regarding the users
+ */
+
+/**
+ * Get a user in db
+ * @param id the id of the user in db
+ * @return an object containing the attributes of the user or null if error or the user doesn't exist
+ */
+function get($id) {
+    $db = \Db::dbc();
+    
+    $sql = 'SELECT * FROM UTILISATEUR WHERE iduser = :id';
+    $sth = $db->prepare($sql);
+    $sth->execute(array(':id' => $id));
+    
+    $result = $sth->fetch();
+    if(!$result){
+        return null;
+    }
+    $o = (object) array(
+        "id" => $result['IDUSER'],
+        "username" => $result['USERNAME'],
+        "name" => $result['NAME'],
+        "dateIns"=>$result['DATEINS'],
+        "password" => $result['MOTPASS'],
+        "email" => $result['ADRESSEML'],
+        "avatar" => $result['AVATAR']
+    );
+    return $o;
+}
+
+/**
+ * Create a user in db
+ * @param username the user's username
+ * @param name the user's name
+ * @param password the user's password
+ * @param email the user's email
+ * @param avatar_path the temporary path to the user's avatar
+ * @return the id which was assigned to the created user, null if an error occured
+ * @warning this function doesn't check whether a user with a similar username exists
+ * @warning this function hashes the password
+ */
+function create($username, $name, $password, $email, $avatar_path) {
+	try{
+		$db = \Db::dbc();
+		
+		$sql = "INSERT INTO `UTILISATEUR` (`USERNAME`, `NAME`, `ADRESSEML`, `MOTPASS`, `AVATAR`) VALUES (:username, :name, :email, :password, :avatar_path);";
+		$stmt = $db->prepare($sql);
+		$result = $stmt->execute(
+			array(
+				':username' => $username,
+				':name' => $name,
+				':email' => $email,
+				':password' => hash_password($password),
+				':avatar_path' => $avatar_path
+//				':date' => date("Y-m-d")
+			)
+		);
+		
+		$last_id=$db->lastInsertId();
+		$db=NULL;
+		return $last_id;
+	} catch (\PDOException $e) {
+		$db=NULL;
+		print $e->getMessage();	
+	}
+}
+
+/**
+ * Modify a user in db
+ * @param uid the user's id to modify
+ * @param username the user's username
+ * @param name the user's name
+ * @param email the user's email
+ * @warning this function doesn't check whether a user with a similar username exists
+ */
+function modify($uid, $username, $name, $email) {
+	try {
+		$db = \Db::dbc();
+		
+		$sql = "UPDATE UTILISATEUR SET USERNAME=:username, NAME=:name, ADRESSEML=:email WHERE IDUSER=:uid";
+		$stmt = $db->prepare($sql);
+		$stmt->execute(
+			array(
+				':username'=>$username,
+				':name'=>$name,
+				':email'=>$email,
+				':uid'=>$uid
+			)
+		);
+		
+		echo "Modify successfully\n";
+	} catch (\PDOException $e) {
+		echo "Error: " . $e->getMessage();
+	}
+	$db=NULL;
+}
+
+/**
+ * Modify a user in db
+ * @param uid the user's id to modify
+ * @param new_password the new password
+ * @warning this function hashes the password
+ */
+function change_password($uid, $new_password) {
+	try {
+		$db = \Db::dbc();
+		
+		$sql = "UPDATE UTILISATEUR SET MOTPASS=:new_password WHERE IDUSER=:uid";
+		$stmt = $db->prepare($sql);
+		$stmt->execute(
+			array(
+				':new_password'=>hash_password($new_password),
+				':uid'=>$uid
+			)
+		);
+		
+		echo "Change password successfully\n";
+	} catch (\PDOException $e) {
+		echo "Error: " . $e->getMessage();
+	}
+	$db=NULL;
+}
+
+/**
+ * Modify a user in db
+ * @param uid the user's id to modify
+ * @param avatar_path the temporary path to the user's avatar
+ */
+function change_avatar($uid, $avatar_path) {
+	try {
+		$db = \Db::dbc();
+		
+		$sql = "UPDATE UTILISATEUR SET AVATAR=:avatar_path WHERE IDUSER=:uid";
+		$stmt = $db->prepare($sql);
+		$stmt->execute(
+			array(
+				':avatar_path'=>$avatar_path,
+				':uid'=>$uid
+			)
+		);
+		
+		echo "Change avatar successfully\n";
+	} catch (\PDOException $e) {
+		echo "Error: " . $e->getMessage();
+	}
+	$db=NULL;
+}
+
+/**
+ * Delete a user in db
+ * @param id the id of the user to delete
+ * @return true if the user has been correctly deleted, false else
+ */
+function destroy($id) {
+	//relative tables include:
+	//"SUIVRE", "UTILISATEUR", "MENTIONNER", "AIMER" -- PK
+	//"TWEET", "SUIVRE", "MENTIONNER", "AIMER" --FK
+	try {
+		$db = \Db::dbc();
+		
+		$db->beginTransaction();
+		$sql = "DELETE FROM TWEET WHERE IDUSER=:id;";
+		$stmt = $db->prepare($sql);
+		$stmt->execute(array(':id'=>$id));
+		
+		$sql = "DELETE FROM SUIVRE WHERE IDUSERSUIT=:id OR IDUSERFAN=:id;";
+		$stmt = $db->prepare($sql);
+		$stmt->execute(array(':id'=>$id));
+		
+		$sql = "DELETE FROM MENTIONNER WHERE IDUSER=:id;";
+		$stmt = $db->prepare($sql);
+		$stmt->execute(array(':id'=>$id));
+		
+		$sql = "DELETE FROM AIMER WHERE IDUSER=:id;";
+		$stmt = $db->prepare($sql);
+		$stmt->execute(array(':id'=>$id));
+		
+		$sql = "DELETE FROM UTILISATEUR WHERE IDUSER=:id;";
+		$stmt = $db->prepare($sql);
+		$stmt->execute(array(':id'=>$id));
+		
+		$db->commit();
+		echo "Destroy successfully\n";
+	} catch (\PDOException $e) {
+		$db->rollback();
+		echo "Error: " . $e->getMessage();
+	}
+	$db=NULL;
+}
+
+/**
+ * Hash a user password
+ * @param password the clear password to hash
+ * @return the hashed password
+ */
+function hash_password($password) {
+	return hash('md5', $password);
+// return $password;
+}
+
+/**
+ * Search a user
+ * @param string the string to search in the name or username
+ * @return an array of find objects
+ */
+function search($string) {
+    return [get(1)];
+}
+
+/**
+ * List users
+ * @return an array of the objects of every users
+ */
+function list_all() {
+    return [get(1)];
+}
+
+/**
+ * Get a user from its username
+ * @param username the searched user's username
+ * @return the user object or null if the user doesn't exist
+ */
+function get_by_username($username) {
+	try{
+		$db = \Db::dbc();
+    
+    	$sql = 'SELECT * FROM UTILISATEUR WHERE USERNAME = :username';
+   	 $sth = $db->prepare($sql);
+    	$sth->execute(array(':username' => $username));
+    
+    	$result = $sth->fetch();
+    	if(!$result){
+        return null;
+    	}
+    	$o = (object) array(
+        "id" => $result['IDUSER'],
+        "username" => $result['USERNAME'],
+        "name" => $result['NAME'],
+        "dateIns"=>$result['DATEINS'],
+        "password" => $result['MOTPASS'],
+        "email" => $result['ADRESSEML'],
+        "avatar" => $result['AVATAR']
+    	);
+    	return $o;
+	} catch (\PDOException $e) {
+		echo "Error: " . $e->getMessage();
+	}
+//    return get(1);
+}
+
+/**
+ * Get a user's followers
+ * @param uid the user's id
+ * @return a list of users objects
+ */
+function get_followers($uid) {
+    return [get(2)];
+}
+
+/**
+ * Get the users our user is following
+ * @param uid the user's id
+ * @return a list of users objects
+ */
+function get_followings($uid) {
+    return [get(2)];
+}
+
+/**
+ * Get a user's stats
+ * @param uid the user's id
+ * @return an object which describes the stats
+ */
+function get_stats($uid) {
+    return (object) array(
+        "nb_posts" => 10,
+        "nb_followers" => 50,
+        "nb_following" => 66
+    );
+}
+
+/**
+ * Verify the user authentification
+ * @param username the user's username
+ * @param password the user's password
+ * @return the user object or null if authentification failed
+ * @warning this function must perform the password hashing   
+ */
+function check_auth($username, $password) {
+	try {
+		$userObj=get_by_username($username);
+		$userPwd=hash_password($password);
+		if($userObj->password===$userPwd) {
+			return $userObj;
+		} else {
+			return (object) NULL;
+		}
+	} catch (\PDOException $e) {
+		echo "Error: " . $e->getMessage();
+	}
+	
+//	return null;
+}
+
+/**
+ * Verify the user authentification based on id
+ * @param id the user's id
+ * @param password the user's password (already hashed)
+ * @return the user object or null if authentification failed
+ */
+function check_auth_id($id, $password) {
+	try {
+		$userObj=get($id);
+		if($userObj->password===$password) {
+			return $userObj;
+		} else {
+			return (object) NULL;
+		}
+	} catch (\PDOException $e) {
+		echo "Error: " . $e->getMessage();
+	}
+	
+// return null;
+}
+
+/**
+ * Follow another user
+ * @param id the current user's id
+ * @param id_to_follow the user's id to follow
+ */
+function follow($id, $id_to_follow) {
+}
+
+/**
+ * Unfollow a user
+ * @param id the current user's id
+ * @param id_to_follow the user's id to unfollow
+ */
+function unfollow($id, $id_to_unfollow) {
+}
+

@@ -1,0 +1,154 @@
+.content {
+    margin: 0 auto;
+    padding: 0 2em;
+    max-width: 1190px;
+    margin-bottom: 50px;
+    line-height: 1.6em;
+}
+
+a {
+    text-decoration: none;
+    color: rgb(0, 132, 180);
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+#nav a:hover {
+    text-decoration: none;
+} 
+
+.pure-menu-horizontal .pure-menu-list {
+    display: inline-flex;
+    width: 100%;
+}
+
+.pure-menu-item-separator {
+    flex-grow: 1;
+}
+
+.search-bar {
+    padding: .5em 1em;
+}
+
+.search-bar input[name="query"] {
+    height: 2em;
+}
+
+.write-twirp textarea[name="text"] {
+    vertical-align: top;
+    width: 80%;
+    width: -moz-calc(100% - 110px);
+    width: -webkit-calc(100% - 110px);
+    width: calc(100% - 110px);
+}
+.write-twirp button[type="submit"] {
+    width: 100px;
+    margin-left: 5px;
+}
+
+.block {
+    border: 1px solid #eeeeee;
+}
+
+.inner-block {
+    padding: 10px;
+}
+
+.inner-block:first-child {
+    border-top: none;
+}
+
+.sidebar {
+    margin-right: 10px;
+}
+
+.sidebar h2 {
+    font-size: 1em;
+    margin-top: 0;
+}
+
+.sidebar li {
+    list-style-type: none;
+}
+
+.post, .notification {
+    border-top: 1px solid #eeeeee;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.post .post-content .actions {
+    float: right;
+}
+
+.post .post-content, .user-head .user-name {
+    display: inline-block;
+    padding: 5px;
+    padding-top: 0px;
+    width: 80%;
+    width: -webkit-calc(100% - 80px);
+    width: -moz-calc(100% - 80px);
+    width: calc(100% - 80px);
+}
+
+.post .post-avatar, .user-head .user-avatar {
+    display: inline-block;
+    vertical-align: top;
+    width: 64px;
+}
+
+.post .post-avatar, .post .post-content {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.post a.link-post {
+    text-decoration: none;
+    color: black;
+}
+
+.post a.link-author {
+    text-decoration: none;
+    color: black;
+}
+
+.thread-separator {
+    background-color: #efefef;
+    height: 20px;
+}
+
+.end {
+    height: 30px;
+}
+
+.pseudo-link {
+    text-decoration: none;
+    color: rgb(0, 132, 180);
+}
+
+.pseudo-link:hover {
+    text-decoration: underline;
+}
+
+.modal {
+
+}
+
+.modal-info {
+    background-color: hsl(168, 56%, 90%);
+    color: hsl(168, 56%, 40%);
+    border-color: hsl(168, 56%, 56%);
+}
+
+.modal-success {
+    background-color: hsl(104, 56%, 90%);
+    color: hsl(104, 56%, 40%);
+    border-color: hsl(104, 56%, 56%);
+}
+
+.modal-error {
+    background-color: hsl(0, 56%, 90%);
+    color: hsl(0, 56%, 40%);
+    border-color: hsl(0, 56%, 56%);
+}

@@ -1,0 +1,17 @@
+17-01-17
+1, Change "AVATAR" to char 140
+2, Change "MOTPASS" to char 60
+3, Change "MOT" back
+
+17-01-05
+1, Change "Lu" from "bool" to "datetime" and set its default value as "NULL"
+
+17-01-03
+1, Change "Lu" from "NULL" to "default false"
+
+17-01-02
+1, Change "IDTWEET_REPONDRE" from "NOT NULL" to "NULL"
+2, Change the date in every table from "date" to "DATETIME DEFAULT CURRENT_TIMESTAMP"
+
+17
+1, Ajouter un attribute de "AVATAR" dans "utilisateur"
