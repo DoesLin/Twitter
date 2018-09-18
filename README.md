@@ -12,7 +12,7 @@ See `instructions/0setup.pdf`
 * `config/` contains every configuration file (for db, …)
 * `lib/` contains libraries such as database handling, session, etc.
 * `model/` contains some data handling modules
-* `model_student/` contains some data handling modules *TO COMPLETE*
+* `model_student/` contains some data handling modules
 * `view/` contains every interface files
 * `controller/` contains every behaviour files
 * `tests/` contains the unit tests suites
